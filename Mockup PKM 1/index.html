@@ -1,0 +1,2313 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LuckySpin — Simulasi Eksperimen</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a12;
+        --surface: #13131f;
+        --card: #1a1a2e;
+        --gold: #f5c842;
+        --gold2: #e6a817;
+        --accent: #7c5cfc;
+        --green: #22d47a;
+        --red: #ff4d6d;
+        --text: #f0f0f8;
+        --muted: #6b6b8a;
+        --border: #2a2a40;
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      h1,
+      h2,
+      h3,
+      .title {
+        font-family: "Syne", sans-serif;
+      }
+
+      /* ========== SCREENS ========== */
+      .screen {
+        display: none;
+        min-height: 100vh;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ========== WELCOME ========== */
+      #screen-welcome {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: radial-gradient(
+          ellipse at 60% 20%,
+          #1e1340 0%,
+          var(--bg) 60%
+        );
+      }
+      .welcome-box {
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+      }
+      .logo-ring {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: conic-gradient(var(--gold), var(--accent), var(--gold));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 40px rgba(245, 200, 66, 0.3);
+      }
+      .logo-ring-inner {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+      .welcome-box h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--gold);
+      }
+      .welcome-box p {
+        color: var(--muted);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+      .consent-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        text-align: left;
+        margin-bottom: 1.5rem;
+        font-size: 0.88rem;
+        color: #a0a0c0;
+        line-height: 1.7;
+      }
+      .consent-box h3 {
+        color: var(--text);
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+      }
+
+      /* ========== BUTTONS ========== */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.85rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, var(--gold), var(--gold2));
+        color: #000;
+        box-shadow: 0 4px 20px rgba(245, 200, 66, 0.35);
+      }
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(245, 200, 66, 0.45);
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1.5px solid var(--border);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-accent {
+        background: linear-gradient(135deg, var(--accent), #5a3dcc);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(124, 92, 252, 0.35);
+      }
+      .btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(124, 92, 252, 0.45);
+      }
+      .btn-full {
+        width: 100%;
+      }
+
+      /* ========== SCENARIO ========== */
+      #screen-scenario {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: radial-gradient(
+          ellipse at 30% 70%,
+          #0d1a30 0%,
+          var(--bg) 55%
+        );
+      }
+      .scenario-container {
+        max-width: 660px;
+        width: 100%;
+      }
+      .scenario-container h2 {
+        font-size: 1.6rem;
+        margin-bottom: 0.3rem;
+      }
+      .scenario-container .sub {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+      .scenario-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.8rem;
+        margin-bottom: 1.2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .scenario-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gold);
+      }
+      .scenario-card.ftp::before {
+        background: var(--accent);
+      }
+      .scenario-badge {
+        display: inline-block;
+        padding: 0.25rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        background: rgba(245, 200, 66, 0.15);
+        color: var(--gold);
+      }
+      .scenario-badge.ftp {
+        background: rgba(124, 92, 252, 0.15);
+        color: var(--accent);
+      }
+      .scenario-card p {
+        font-size: 0.92rem;
+        color: #c0c0d8;
+        line-height: 1.75;
+      }
+      .scenario-card h3 {
+        font-size: 1.05rem;
+        margin-bottom: 0.6rem;
+      }
+
+      /* hidden participant ID */
+      #participant-id {
+        display: none;
+      }
+
+      /* ========== MANIPULATION CHECK ========== */
+      #screen-mancheck {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: var(--bg);
+      }
+      .mancheck-box {
+        max-width: 600px;
+        width: 100%;
+      }
+      .mancheck-box h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.3rem;
+      }
+      .mancheck-box .sub {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+      }
+      .scale-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .scale-item p {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+        color: #c8c8e0;
+      }
+      .likert {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .likert label {
+        flex: 1;
+        min-width: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+      }
+      .likert input[type="radio"] {
+        display: none;
+      }
+      .likert-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .likert input:checked + .likert-btn {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(124, 92, 252, 0.5);
+      }
+      .likert-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      /* ========== GAME HOME ========== */
+      #screen-game {
+        background: linear-gradient(170deg, #0c0c1a 0%, #0a0a0f 100%);
+        min-height: 100vh;
+      }
+      .game-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid var(--border);
+      }
+      .game-logo {
+        font-family: "Syne", sans-serif;
+        font-size: 1.2rem;
+        color: var(--gold);
+      }
+      .token-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(245, 200, 66, 0.1);
+        border: 1px solid rgba(245, 200, 66, 0.3);
+        border-radius: 50px;
+        padding: 0.4rem 1rem;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        color: var(--gold);
+      }
+      .game-body {
+        padding: 1.5rem;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      /* promo banner */
+      .promo-banner {
+        background: linear-gradient(135deg, #1e3a2a, #0f2a1a);
+        border: 1px solid #2d5a3d;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+      .promo-icon {
+        font-size: 1.5rem;
+      }
+      .promo-text {
+        flex: 1;
+      }
+      .promo-text .title {
+        font-size: 0.85rem;
+        color: var(--green);
+        font-weight: 700;
+      }
+      .promo-text .desc {
+        font-size: 0.78rem;
+        color: #7ab89a;
+      }
+
+      .section-title {
+        font-family: "Syne", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin: 1.2rem 0 0.8rem;
+      }
+
+      /* spin card */
+      .spin-card {
+        background: linear-gradient(135deg, var(--card), #12122a);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .spin-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 50% 0%,
+          rgba(124, 92, 252, 0.12),
+          transparent 65%
+        );
+      }
+      .spin-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+        color: var(--gold);
+        position: relative;
+        z-index: 1;
+      }
+      .spin-card p {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* wheel */
+      .wheel-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        z-index: 1;
+      }
+      #spin-wheel {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 6px solid var(--gold);
+        box-shadow: 0 0 30px rgba(245, 200, 66, 0.3);
+        transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 1);
+        cursor: pointer;
+      }
+      .wheel-pointer {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.8rem;
+        text-shadow: 0 0 10px rgba(245, 200, 66, 0.5);
+      }
+
+      .bet-area {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+        z-index: 1;
+        position: relative;
+      }
+      .bet-area label {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .bet-input {
+        width: 80px;
+        padding: 0.5rem 0.8rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-align: center;
+      }
+      .bet-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .bet-presets {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+        justify-content: center;
+        z-index: 1;
+        position: relative;
+      }
+      .bet-preset {
+        padding: 0.3rem 0.7rem;
+        border-radius: 50px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-size: 0.78rem;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .bet-preset:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .spin-result {
+        min-height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        z-index: 1;
+        position: relative;
+      }
+      .result-win {
+        color: var(--green);
+      }
+      .result-lose {
+        color: var(--red);
+      }
+
+      /* game stats */
+      .game-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.8rem;
+        text-align: center;
+      }
+      .stat-box .val {
+        font-family: "Syne", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .stat-box .lbl {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .val-green {
+        color: var(--green);
+      }
+      .val-red {
+        color: var(--red);
+      }
+      .val-gold {
+        color: var(--gold);
+      }
+
+      /* action buttons */
+      .game-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      /* mission */
+      .mission-box {
+        background: linear-gradient(135deg, #1a1030, #12102a);
+        border: 1px solid #2a2050;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .mission-box .mission-title {
+        font-size: 0.8rem;
+        color: var(--accent);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .mission-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+      .progress-bar {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--gold));
+        transition: width 0.5s;
+      }
+      .mission-reward {
+        font-size: 0.8rem;
+        color: var(--gold);
+        font-weight: 600;
+      }
+
+      /* ========== PGSI SCREEN ========== */
+      #screen-pgsi,
+      #screen-gus {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: var(--bg);
+      }
+      .survey-box {
+        max-width: 640px;
+        width: 100%;
+      }
+      .survey-box h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.3rem;
+      }
+      .survey-box .sub {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+      }
+      .survey-intro {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        color: #a0a0c0;
+        line-height: 1.7;
+      }
+      .q-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .q-item .q-text {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        color: #d0d0e8;
+      }
+      .q-number {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 24px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-right: 0.5rem;
+      }
+      .likert-4 {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .likert-4 label {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+      }
+      .likert-4 input[type="radio"] {
+        display: none;
+      }
+      .l4-btn {
+        width: 100%;
+        padding: 0.5rem 0.2rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-align: center;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .likert-4 input:checked + .l4-btn {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(124, 92, 252, 0.4);
+      }
+
+      /* GUS - VAS slider */
+      .gus-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .gus-item .q-text {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        color: #d0d0e8;
+      }
+      .vas-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+      .vas-wrap input[type="range"] {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 6px;
+        background: linear-gradient(90deg, var(--accent), var(--gold));
+        border-radius: 3px;
+      }
+      .vas-wrap input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--gold);
+        cursor: pointer;
+        box-shadow: 0 0 8px rgba(245, 200, 66, 0.5);
+      }
+      .vas-val {
+        min-width: 40px;
+        text-align: center;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        color: var(--gold);
+      }
+      .vas-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 0.3rem;
+      }
+
+      /* ========== RESULT ========== */
+      #screen-result {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: radial-gradient(
+          ellipse at 50% 30%,
+          #1a1030 0%,
+          var(--bg) 60%
+        );
+      }
+      .result-box {
+        max-width: 540px;
+        width: 100%;
+      }
+      .result-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .result-header .icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
+      .result-header h2 {
+        font-size: 1.8rem;
+        color: var(--gold);
+      }
+      .result-header p {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .result-scores {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .score-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.2rem;
+        text-align: center;
+      }
+      .score-card .label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .score-card .score {
+        font-family: "Syne", sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+      }
+      .score-card .category {
+        font-size: 0.82rem;
+        margin-top: 0.3rem;
+        font-weight: 600;
+      }
+      .score-low {
+        color: var(--green);
+      }
+      .score-mod {
+        color: var(--gold);
+      }
+      .score-high {
+        color: var(--red);
+      }
+      .result-detail {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.88rem;
+        color: #b0b0cc;
+        line-height: 1.75;
+      }
+      .result-detail h3 {
+        color: var(--text);
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+      }
+      .researcher-panel {
+        background: #0c0c1a;
+        border: 1px solid var(--accent);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .researcher-panel h3 {
+        color: var(--accent);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      .data-table td {
+        padding: 0.5rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+        color: #b0b0cc;
+      }
+      .data-table td:first-child {
+        color: var(--muted);
+        width: 55%;
+      }
+      .data-table td:last-child {
+        font-family: "Syne", sans-serif;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* ========== ADMIN ========== */
+      #screen-admin {
+        padding: 2rem;
+        background: var(--bg);
+        min-height: 100vh;
+        align-items: flex-start;
+      }
+      .admin-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .admin-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+      .admin-header h2 {
+        font-size: 1.5rem;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table.admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      table.admin-table th {
+        padding: 0.7rem 1rem;
+        background: var(--card);
+        border-bottom: 2px solid var(--border);
+        text-align: left;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      table.admin-table td {
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--border);
+        color: #c0c0d8;
+        white-space: nowrap;
+      }
+      table.admin-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* transitions */
+      .fade-in {
+        animation: fadeIn 0.4s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .chip {
+        display: inline-block;
+        padding: 0.2rem 0.7rem;
+        border-radius: 50px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .chip-green {
+        background: rgba(34, 212, 122, 0.15);
+        color: var(--green);
+      }
+      .chip-red {
+        background: rgba(255, 77, 109, 0.15);
+        color: var(--red);
+      }
+      .chip-gold {
+        background: rgba(245, 200, 66, 0.15);
+        color: var(--gold);
+      }
+      .chip-blue {
+        background: rgba(124, 92, 252, 0.15);
+        color: var(--accent);
+      }
+
+      .progress-steps {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+      .step-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: all 0.3s;
+      }
+      .step-dot.done {
+        background: var(--accent);
+      }
+      .step-dot.active {
+        background: var(--gold);
+        transform: scale(1.4);
+      }
+
+      .toast {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.8rem 1.2rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        background: var(--card);
+        border: 1px solid var(--border);
+        z-index: 999;
+        transform: translateX(200%);
+        transition: transform 0.3s;
+        max-width: 280px;
+      }
+      .toast.show {
+        transform: translateX(0);
+      }
+      .toast.toast-win {
+        border-color: var(--green);
+        color: var(--green);
+      }
+      .toast.toast-lose {
+        border-color: var(--red);
+        color: var(--red);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================
+     SCREEN 0: WELCOME
+============================ -->
+    <div id="screen-welcome" class="screen active fade-in">
+      <div class="welcome-box">
+        <div class="logo-ring"><div class="logo-ring-inner">🎰</div></div>
+        <h1>LuckySpin</h1>
+        <p>Simulasi Pengambilan Keputusan Finansial</p>
+        <div class="consent-box">
+          <h3>📋 Informasi Studi</h3>
+          Anda akan berpartisipasi dalam studi eksperimen mengenai pengambilan
+          keputusan dalam situasi berisiko. Partisipasi bersifat sukarela dan
+          data Anda akan dijaga kerahasiaannya. Studi ini tidak menggunakan uang
+          nyata — semua token dalam simulasi bersifat virtual. Estimasi waktu:
+          <strong>±15 menit</strong>.
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 0.8rem;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.6rem;
+              cursor: pointer;
+              font-size: 0.88rem;
+              color: #a0a0c0;
+            "
+          >
+            <input
+              type="checkbox"
+              id="consent-check"
+              style="width: 16px; height: 16px; accent-color: var(--accent)"
+            />
+            Saya memahami dan setuju untuk berpartisipasi
+          </label>
+          <button
+            class="btn btn-gold"
+            onclick="startStudy()"
+            style="width: 240px"
+          >
+            Mulai Studi →
+          </button>
+          <button
+            class="btn btn-ghost"
+            onclick="gotoAdmin()"
+            style="font-size: 0.78rem; padding: 0.5rem 1rem"
+          >
+            Panel Peneliti
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 1: PARTICIPANT INFO
+============================ -->
+    <div id="screen-info" class="screen fade-in">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 2rem;
+          background: var(--bg);
+        "
+      >
+        <div style="max-width: 500px; width: 100%">
+          <div class="progress-steps" id="steps-info">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
+          <h2 style="margin-bottom: 0.3rem">Data Partisipan</h2>
+          <p
+            style="
+              color: var(--muted);
+              font-size: 0.88rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            Informasi ini hanya digunakan untuk keperluan penelitian.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 1rem">
+            <div>
+              <label
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 0.4rem;
+                "
+                >Usia</label
+              >
+              <input
+                type="number"
+                id="p-age"
+                min="17"
+                max="30"
+                placeholder="Contoh: 20"
+                style="
+                  width: 100%;
+                  padding: 0.8rem 1rem;
+                  background: var(--card);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                  font-size: 0.95rem;
+                "
+              />
+            </div>
+            <div>
+              <label
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 0.4rem;
+                "
+                >Jenis Kelamin</label
+              >
+              <select
+                id="p-gender"
+                style="
+                  width: 100%;
+                  padding: 0.8rem 1rem;
+                  background: var(--card);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                  font-size: 0.95rem;
+                "
+              >
+                <option value="">-- Pilih --</option>
+                <option>Laki-laki</option>
+                <option>Perempuan</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 0.4rem;
+                "
+                >Semester</label
+              >
+              <select
+                id="p-semester"
+                style="
+                  width: 100%;
+                  padding: 0.8rem 1rem;
+                  background: var(--card);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                  font-size: 0.95rem;
+                "
+              >
+                <option value="">-- Pilih --</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  display: block;
+                  margin-bottom: 0.4rem;
+                "
+                >Uang Saku per Bulan</label
+              >
+              <select
+                id="p-income"
+                style="
+                  width: 100%;
+                  padding: 0.8rem 1rem;
+                  background: var(--card);
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  color: var(--text);
+                  font-size: 0.95rem;
+                "
+              >
+                <option value="">-- Pilih --</option>
+                <option>< Rp 500.000</option>
+                <option>Rp 500.000 – Rp 1.000.000</option>
+                <option>Rp 1.000.000 – Rp 2.000.000</option>
+                <option>> Rp 2.000.000</option>
+              </select>
+            </div>
+            <button class="btn btn-accent btn-full" onclick="nextFromInfo()">
+              Lanjut →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 2: SCENARIO
+============================ -->
+    <div id="screen-scenario" class="screen fade-in">
+      <div class="scenario-container">
+        <div class="progress-steps">
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <h2>Bayangkan Situasi Ini</h2>
+        <p class="sub">
+          Baca dengan seksama dan bayangkan Anda benar-benar ada dalam situasi
+          berikut ini.
+        </p>
+        <div class="scenario-card" id="fa-scenario-card">
+          <div class="scenario-badge" id="fa-badge">💸 Kondisi Keuangan</div>
+          <h3 id="fa-title"></h3>
+          <p id="fa-text"></p>
+        </div>
+        <div class="scenario-card ftp" id="ftp-scenario-card">
+          <div class="scenario-badge ftp" id="ftp-badge">
+            🔮 Perspektif Waktu
+          </div>
+          <h3 id="ftp-title"></h3>
+          <p id="ftp-text"></p>
+        </div>
+        <div
+          style="
+            background: rgba(245, 200, 66, 0.07);
+            border: 1px solid rgba(245, 200, 66, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
+            color: #d0c070;
+          "
+        >
+          ⚠️ Ingatlah situasi di atas saat Anda bermain dan mengisi kuesioner.
+        </div>
+        <button class="btn btn-gold btn-full" onclick="gotoManCheck()">
+          Saya Sudah Membaca →
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 3: MANIPULATION CHECK
+============================ -->
+    <div id="screen-mancheck" class="screen fade-in">
+      <div class="mancheck-box">
+        <div class="progress-steps">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <h2>Cek Pemahaman Skenario</h2>
+        <p class="sub">
+          Jawab berdasarkan perasaan Anda setelah membaca skenario tadi (Skala
+          1–5)
+        </p>
+        <div id="mancheck-items"></div>
+        <button class="btn btn-accent btn-full" onclick="submitManCheck()">
+          Lanjut ke Permainan →
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 4: GAME
+============================ -->
+    <div id="screen-game" class="screen">
+      <div class="game-topbar">
+        <div class="game-logo">🎰 LuckySpin</div>
+        <div class="token-display">🪙 <span id="token-display">100</span></div>
+      </div>
+      <div class="game-body">
+        <!-- Promos -->
+        <div class="promo-banner">
+          <div class="promo-icon">🎁</div>
+          <div class="promo-text">
+            <div class="title">Bonus Pengguna Baru</div>
+            <div class="desc">+20 token gratis untuk spin pertama Anda!</div>
+          </div>
+        </div>
+        <div class="promo-banner">
+          <div class="promo-icon">💰</div>
+          <div class="promo-text">
+            <div class="title">Cashback 50% Kekalahan</div>
+            <div class="desc">
+              Kalah? Dapatkan 50% token kembali (maks. 3x/hari)
+            </div>
+          </div>
+        </div>
+
+        <!-- Mission -->
+        <div class="mission-box">
+          <div class="mission-title">🎯 Misi Harian</div>
+          <div
+            style="font-size: 0.82rem; color: #c0b0e0; margin-bottom: 0.5rem"
+          >
+            Spin 5x untuk dapat +15 token bonus
+          </div>
+          <div class="mission-progress">
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="mission-bar"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="mission-reward" id="mission-label">0/5</div>
+          </div>
+        </div>
+
+        <!-- Game stats -->
+        <div class="section-title">Statistik Sesi</div>
+        <div class="game-stats">
+          <div class="stat-box">
+            <div class="val val-gold" id="stat-spins">0</div>
+            <div class="lbl">Total Spin</div>
+          </div>
+          <div class="stat-box">
+            <div class="val val-green" id="stat-wins">0</div>
+            <div class="lbl">Menang</div>
+          </div>
+          <div class="stat-box">
+            <div class="val val-red" id="stat-losses">0</div>
+            <div class="lbl">Kalah</div>
+          </div>
+        </div>
+
+        <!-- Spin wheel -->
+        <div class="spin-card">
+          <h3>Putar Roda Keberuntungan</h3>
+          <p>Menang → token ×2 | Kalah → kehilangan token taruhan</p>
+          <div class="wheel-wrap">
+            <div class="wheel-pointer">▼</div>
+            <canvas id="spin-wheel" width="220" height="220"></canvas>
+          </div>
+          <div class="bet-presets">
+            <div class="bet-preset" onclick="setBet(5)">5</div>
+            <div class="bet-preset" onclick="setBet(10)">10</div>
+            <div class="bet-preset" onclick="setBet(20)">20</div>
+            <div class="bet-preset" onclick="setBet(50)">50</div>
+          </div>
+          <div class="bet-area">
+            <label>Taruhan:</label>
+            <input
+              type="number"
+              id="bet-input"
+              class="bet-input"
+              value="10"
+              min="1"
+            />
+            <span style="color: var(--muted); font-size: 0.82rem">token</span>
+          </div>
+          <div class="spin-result" id="spin-result"></div>
+          <button
+            class="btn btn-gold btn-full"
+            id="spin-btn"
+            onclick="doSpin()"
+            style="margin-top: 0.8rem"
+          >
+            🎰 PUTAR SEKARANG
+          </button>
+        </div>
+
+        <!-- Actions -->
+        <div class="game-actions">
+          <button class="btn btn-accent btn-full" onclick="gotoSurvey()">
+            Selesai Bermain → Isi Kuesioner
+          </button>
+          <button class="btn btn-ghost btn-full" onclick="saveAndExit()">
+            Simpan Token & Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 5: PGSI
+============================ -->
+    <div id="screen-pgsi" class="screen fade-in">
+      <div class="survey-box">
+        <div class="progress-steps">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+        </div>
+        <h2>Kuesioner PGSI</h2>
+        <p class="sub">Problem Gambling Severity Index</p>
+        <div class="survey-intro">
+          Selama sesi bermain tadi, seberapa sering Anda mengalami hal-hal
+          berikut?<br />
+          <strong
+            >0 = Tidak pernah | 1 = Kadang-kadang | 2 = Sering | 3 = Hampir
+            selalu</strong
+          >
+        </div>
+        <div id="pgsi-items"></div>
+        <button class="btn btn-accent btn-full" onclick="submitPGSI()">
+          Lanjut ke GUS →
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 6: GUS
+============================ -->
+    <div id="screen-gus" class="screen fade-in">
+      <div class="survey-box">
+        <div class="progress-steps">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+        </div>
+        <h2>Kuesioner GUS</h2>
+        <p class="sub">Gambling Urge Scale — Dorongan untuk Berjudi</p>
+        <div class="survey-intro">
+          Pikirkan perasaan Anda saat bermain LuckySpin tadi. Geser slider untuk
+          menunjukkan seberapa kuat perasaan tersebut.<br />
+          <strong
+            >0 = Sangat tidak setuju &nbsp;|&nbsp; 10 = Sangat setuju</strong
+          >
+        </div>
+        <div id="gus-items"></div>
+        <button class="btn btn-gold btn-full" onclick="submitGUS()">
+          Lihat Hasil →
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 7: RESULT
+============================ -->
+    <div id="screen-result" class="screen fade-in">
+      <div class="result-box">
+        <div class="result-header">
+          <div class="icon">📊</div>
+          <h2>Hasil Studi Anda</h2>
+          <p>Terima kasih telah berpartisipasi dalam studi ini</p>
+        </div>
+        <div class="result-scores">
+          <div class="score-card">
+            <div class="label">PGSI Score</div>
+            <div class="score" id="pgsi-score">—</div>
+            <div class="category" id="pgsi-cat">—</div>
+          </div>
+          <div class="score-card">
+            <div class="label">GUS Score</div>
+            <div class="score" id="gus-score">—</div>
+            <div class="category" id="gus-cat">—</div>
+          </div>
+        </div>
+        <div class="result-detail" id="result-detail-box">
+          <h3>💡 Interpretasi</h3>
+          <p id="result-interpretation"></p>
+        </div>
+        <!-- Researcher data panel -->
+        <div class="researcher-panel">
+          <h3>🔬 Data Partisipan (untuk peneliti)</h3>
+          <table class="data-table" id="researcher-table"></table>
+        </div>
+        <div style="display: flex; gap: 0.8rem">
+          <button class="btn btn-accent btn-full" onclick="downloadData()">
+            ⬇ Unduh Data JSON
+          </button>
+          <button class="btn btn-ghost" onclick="location.reload()">
+            Mulai Baru
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+     SCREEN 8: ADMIN
+============================ -->
+    <div id="screen-admin" class="screen fade-in">
+      <div class="admin-wrap">
+        <div class="admin-header">
+          <h2>📊 Panel Peneliti</h2>
+          <div style="display: flex; gap: 0.8rem">
+            <button class="btn btn-accent" onclick="exportCSV()">
+              Export CSV
+            </button>
+            <button
+              class="btn btn-ghost"
+              onclick="gotoScreen('screen-welcome')"
+            >
+              ← Kembali
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table" id="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Waktu</th>
+                <th>Usia</th>
+                <th>Gender</th>
+                <th>Kondisi FA</th>
+                <th>Kondisi FTP</th>
+                <th>Token Awal</th>
+                <th>Token Akhir</th>
+                <th>Total Spin</th>
+                <th>Menang</th>
+                <th>Kalah</th>
+                <th>PGSI Score</th>
+                <th>PGSI Kategori</th>
+                <th>GUS Score</th>
+                <th>GUS Kategori</th>
+                <th>Pilihan Keluar</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.82rem; color: var(--muted)">
+          Data tersimpan di localStorage browser ini.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // STATE
+      // ============================================================
+      let state = {
+        participantId: null,
+        fa: null, // 'high' | 'low'
+        ftp: null, // 'high' | 'low'
+        age: null,
+        gender: null,
+        semester: null,
+        income: null,
+        manCheckAnswers: {},
+        tokens: 100,
+        startTokens: 100,
+        spins: 0,
+        wins: 0,
+        losses: 0,
+        spinHistory: [],
+        missionBonus: false,
+        exitChoice: null, // 'play' | 'save'
+        pgsiAnswers: {},
+        gusAnswers: {},
+        pgsiScore: null,
+        gusScore: null,
+        timestamp: null,
+      };
+
+      // ============================================================
+      // SCENARIOS
+      // ============================================================
+      const scenarios = {
+        fa: {
+          high: {
+            title: "Situasi Keuangan Anda Saat Ini",
+            text: "Anda baru saja melihat kondisi keuangan bulan ini. Pemasukan bulan ini lebih kecil dari yang diperkirakan karena orang tua sedang mengalami keterbatasan finansial. Anda panik dan gelisah karena ada beberapa tagihan penting yang jatuh tempo 14 hari ke depan (pembayaran kos, UKT), belum lagi biaya kehidupan sehari-hari. Anda merasa dana darurat tidak cukup menutupi kebutuhan yang mendesak. Anda mulai memikirkan kemungkinan harus menunda, meminjam, atau mencari uang tambahan dengan cepat.",
+          },
+          low: {
+            title: "Situasi Keuangan Anda Saat Ini",
+            text: "Anda baru saja melihat kondisi keuangan bulan ini. Tagihan penting (pembayaran kos, UKT) masih bisa dibayar tepat waktu dan kebutuhan sehari-hari masih terpenuhi. Anda memiliki dana darurat untuk kebutuhan mendesak, dan jika ada kebutuhan tidak terduga Anda merasa mampu mengatasinya. Anda tidak merasa khawatir soal uang saat ini.",
+          },
+        },
+        ftp: {
+          high: {
+            title: "Cara Anda Memandang Masa Depan",
+            text: "Anda memikirkan bahwa setiap keputusan akan ada risikonya dan akan berdampak 5–10 tahun ke depan. Anda selalu membayangkan kondisi keuangan yang stabil setelah lulus kuliah dan mendapat pekerjaan — dana darurat yang cukup, hingga kehidupan yang terencana. Bagi Anda, mengambil keputusan jangka pendek yang ceroboh akan merusak rencana masa depan, sehingga penting untuk memikirkan risiko jangka panjang.",
+          },
+          low: {
+            title: "Cara Anda Memandang Masa Depan",
+            text: "Anda merasa hidup penuh ketidakpastian — masa depan bisa berjalan tidak sesuai rencana dan tidak bisa diprediksi. Memikirkan 5–10 tahun ke depan membuat Anda stres karena terasa masih sangat lama. Karena itu, Anda lebih fokus menikmati kebutuhan dan dana yang dimiliki saat ini, dengan anggapan masalah masa depan dapat dipikirkan nanti.",
+          },
+        },
+      };
+
+      // ============================================================
+      // MANIPULATION CHECK ITEMS
+      // ============================================================
+      const manCheckItems = [
+        {
+          id: "mc1",
+          text: "Setelah membaca skenario, saya merasa khawatir/cemas mengenai kondisi keuangan saya.",
+          scale: "FA",
+        },
+        {
+          id: "mc2",
+          text: "Saya merasa tertekan memikirkan tagihan dan kebutuhan finansial yang harus dipenuhi.",
+          scale: "FA",
+        },
+        {
+          id: "mc3",
+          text: "Kondisi keuangan saya saat ini terasa mencukupi dan tidak membuat saya khawatir.",
+          scale: "FA",
+          reverse: true,
+        },
+        {
+          id: "mc4",
+          text: "Saya cenderung memikirkan dampak keputusan saya pada kehidupan di masa depan (5–10 tahun mendatang).",
+          scale: "FTP",
+        },
+        {
+          id: "mc5",
+          text: "Saya lebih mementingkan kebutuhan dan kesenangan saat ini daripada merencanakan masa depan.",
+          scale: "FTP",
+          reverse: true,
+        },
+        {
+          id: "mc6",
+          text: "Ketika membuat keputusan, saya mempertimbangkan konsekuensi jangka panjangnya.",
+          scale: "FTP",
+        },
+      ];
+
+      // ============================================================
+      // PGSI ITEMS
+      // ============================================================
+      const pgsiItems = [
+        "Anda bertaruh lebih dari yang sebenarnya mampu Anda tanggung untuk kehilangan?",
+        "Anda perlu bertaruh dengan jumlah yang lebih besar untuk mendapatkan kegembiraan yang sama?",
+        "Ketika berjudi, Anda kembali ke hari lain untuk mencoba memenangkan kembali uang yang hilang?",
+        "Anda telah meminjam uang atau menjual sesuatu untuk mendapatkan uang untuk berjudi?",
+        "Anda merasa bahwa Anda mungkin memiliki masalah dengan perjudian?",
+        "Judi menyebabkan Anda masalah kesehatan, termasuk stres atau kecemasan?",
+        "Orang-orang mengkritik perilaku bertaruh Anda atau memberi tahu Anda bahwa Anda memiliki masalah judi?",
+        "Perjudian menyebabkan masalah keuangan bagi Anda atau rumah tangga Anda?",
+        "Anda merasa bersalah atas cara Anda berjudi atau tentang apa yang terjadi saat Anda berjudi?",
+      ];
+      const pgsiOptions = [
+        "Tidak pernah",
+        "Kadang-kadang",
+        "Sering",
+        "Hampir selalu",
+      ];
+
+      // ============================================================
+      // GUS ITEMS (Gambling Urge Scale — 6 item adaptasi)
+      // ============================================================
+      const gusItems = [
+        "Saya sangat ingin bermain lagi sekarang.",
+        "Saya merasa hampir tidak bisa menahan diri untuk tidak bertaruh lagi.",
+        "Tidak ada yang lebih saya inginkan saat ini selain bermain lagi.",
+        "Keinginan untuk bertaruh terasa sangat kuat dalam diri saya.",
+        "Jika ada kesempatan, saya akan langsung bermain lagi.",
+        "Saya merasakan dorongan yang luar biasa untuk terus bermain.",
+      ];
+
+      // ============================================================
+      // WHEEL
+      // ============================================================
+      function drawWheel(rotation) {
+        const canvas = document.getElementById("spin-wheel");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const cx = 110,
+          cy = 110,
+          r = 100;
+        const segments = [
+          { label: "2×", color: "#22d47a" },
+          { label: "KALAH", color: "#ff4d6d" },
+          { label: "2×", color: "#22d47a" },
+          { label: "KALAH", color: "#ff4d6d" },
+          { label: "2×", color: "#22d47a" },
+          { label: "KALAH", color: "#ff4d6d" },
+          { label: "BONUS", color: "#f5c842" },
+          { label: "KALAH", color: "#ff4d6d" },
+        ];
+        ctx.clearRect(0, 0, 220, 220);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((rotation * Math.PI) / 180);
+        const arc = (2 * Math.PI) / segments.length;
+        segments.forEach((seg, i) => {
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, r, i * arc, (i + 1) * arc);
+          ctx.closePath();
+          ctx.fillStyle = seg.color;
+          ctx.fill();
+          ctx.strokeStyle = "#0a0a12";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.save();
+          ctx.rotate((i + 0.5) * arc);
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#000";
+          ctx.font = "bold 13px Syne, sans-serif";
+          ctx.fillText(seg.label, 60, 5);
+          ctx.restore();
+        });
+        ctx.restore();
+        // center dot
+        ctx.beginPath();
+        ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = "#f5c842";
+        ctx.fill();
+      }
+
+      let wheelRot = 0;
+      let spinning = false;
+
+      function doSpin() {
+        if (spinning) return;
+        const bet = parseInt(document.getElementById("bet-input").value) || 10;
+        if (bet < 1 || bet > state.tokens) {
+          showToast("Token tidak cukup atau taruhan tidak valid!", "lose");
+          return;
+        }
+        spinning = true;
+        document.getElementById("spin-btn").disabled = true;
+        document.getElementById("spin-result").textContent = "";
+
+        const extraRot = 1080 + Math.floor(Math.random() * 360);
+        const targetRot = wheelRot + extraRot;
+
+        const canvas = document.getElementById("spin-wheel");
+        canvas.style.transition = "transform 3s cubic-bezier(.17,.67,.12,1)";
+        canvas.style.transform = `rotate(${targetRot}deg)`;
+
+        let start = null;
+        const duration = 3000;
+        const startRot = wheelRot;
+        function animate(ts) {
+          if (!start) start = ts;
+          const progress = Math.min((ts - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 4);
+          drawWheel(startRot + (targetRot - startRot) * eased);
+          if (progress < 1) requestAnimationFrame(animate);
+          else {
+            wheelRot = targetRot % 360;
+            resolveSpinResult(bet, targetRot % 360);
+          }
+        }
+        canvas.style.transition = "";
+        canvas.style.transform = "";
+        requestAnimationFrame(animate);
+      }
+
+      function resolveSpinResult(bet, finalRot) {
+        // 8 segments, each 45deg. Pointer at top = 270 or 90 depending on orientation
+        // Segment index at pointer (top = 270deg from start)
+        const segIdx = Math.floor(((360 - (finalRot % 360)) % 360) / 45) % 8;
+        const outcomes = [
+          "win",
+          "lose",
+          "win",
+          "lose",
+          "win",
+          "lose",
+          "bonus",
+          "lose",
+        ];
+        const outcome = outcomes[segIdx];
+
+        state.spins++;
+        let resultText = "";
+
+        if (outcome === "win") {
+          state.tokens += bet;
+          state.wins++;
+          resultText = `🎉 MENANG! +${bet} token`;
+          showToast(`Menang! +${bet} token`, "win");
+          document.getElementById("spin-result").className =
+            "spin-result result-win";
+        } else if (outcome === "bonus") {
+          const bonus = Math.floor(bet * 1.5);
+          state.tokens += bonus;
+          state.wins++;
+          resultText = `⭐ BONUS! +${bonus} token`;
+          showToast(`Bonus! +${bonus} token`, "win");
+          document.getElementById("spin-result").className =
+            "spin-result result-win";
+        } else {
+          state.tokens -= bet;
+          state.losses++;
+          // cashback simulation
+          const cashback = Math.floor(bet * 0.5);
+          if (state.losses <= 3) {
+            state.tokens += cashback;
+            resultText = `😞 KALAH −${bet} | Cashback +${cashback} token`;
+          } else {
+            resultText = `😞 KALAH −${bet} token`;
+          }
+          showToast(resultText, "lose");
+          document.getElementById("spin-result").className =
+            "spin-result result-lose";
+        }
+
+        if (state.tokens < 0) state.tokens = 0;
+        state.spinHistory.push({
+          spin: state.spins,
+          bet,
+          outcome,
+          tokensAfter: state.tokens,
+        });
+
+        document.getElementById("spin-result").textContent = resultText;
+        document.getElementById("token-display").textContent = state.tokens;
+        document.getElementById("stat-spins").textContent = state.spins;
+        document.getElementById("stat-wins").textContent = state.wins;
+        document.getElementById("stat-losses").textContent = state.losses;
+
+        // mission
+        const mPct = Math.min(state.spins / 5, 1) * 100;
+        document.getElementById("mission-bar").style.width = mPct + "%";
+        document.getElementById("mission-label").textContent =
+          Math.min(state.spins, 5) + "/5";
+        if (state.spins === 5 && !state.missionBonus) {
+          state.missionBonus = true;
+          state.tokens += 15;
+          document.getElementById("token-display").textContent = state.tokens;
+          showToast("Misi selesai! +15 token bonus 🎯", "win");
+        }
+
+        spinning = false;
+        document.getElementById("spin-btn").disabled = false;
+      }
+
+      // ============================================================
+      // NAVIGATION
+      // ============================================================
+      function gotoScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function startStudy() {
+        if (!document.getElementById("consent-check").checked) {
+          showToast("Centang persetujuan terlebih dahulu", "lose");
+          return;
+        }
+        state.participantId = "P" + Date.now().toString(36).toUpperCase();
+        // Random assignment 2x2
+        state.fa = Math.random() < 0.5 ? "high" : "low";
+        state.ftp = Math.random() < 0.5 ? "high" : "low";
+        gotoScreen("screen-info");
+      }
+
+      function nextFromInfo() {
+        state.age = document.getElementById("p-age").value;
+        state.gender = document.getElementById("p-gender").value;
+        state.semester = document.getElementById("p-semester").value;
+        state.income = document.getElementById("p-income").value;
+        if (!state.age || !state.gender || !state.semester || !state.income) {
+          showToast("Lengkapi semua data terlebih dahulu", "lose");
+          return;
+        }
+        buildScenario();
+        gotoScreen("screen-scenario");
+      }
+
+      function buildScenario() {
+        document.getElementById("fa-title").textContent =
+          scenarios.fa[state.fa].title;
+        document.getElementById("fa-text").textContent =
+          scenarios.fa[state.fa].text;
+        document.getElementById("ftp-title").textContent =
+          scenarios.ftp[state.ftp].title;
+        document.getElementById("ftp-text").textContent =
+          scenarios.ftp[state.ftp].text;
+        document.getElementById("fa-badge").textContent =
+          state.fa === "high"
+            ? "😰 Financial Anxiety Tinggi"
+            : "😊 Financial Anxiety Rendah";
+        document.getElementById("ftp-badge").textContent =
+          state.ftp === "high"
+            ? "🔮 Future Time Perspective Tinggi"
+            : "⏳ Future Time Perspective Rendah";
+      }
+
+      function gotoManCheck() {
+        buildManCheck();
+        gotoScreen("screen-mancheck");
+      }
+
+      function buildManCheck() {
+        const container = document.getElementById("mancheck-items");
+        container.innerHTML = manCheckItems
+          .map(
+            (item, i) => `
+    <div class="scale-item">
+      <p><span class="q-number">${i + 1}</span>${item.text} <span style="font-size:.72rem;color:var(--muted)">[${item.scale}${item.reverse ? "*" : ""}]</span></p>
+      <div class="likert">
+        ${[1, 2, 3, 4, 5]
+          .map(
+            (v) => `
+          <label>
+            <input type="radio" name="${item.id}" value="${v}" onchange="state.manCheckAnswers['${item.id}']=this.value">
+            <div class="likert-btn">${v}</div>
+            <div class="likert-label">${v === 1 ? "Sangat Tidak Setuju" : v === 5 ? "Sangat Setuju" : ""}</div>
+          </label>`,
+          )
+          .join("")}
+      </div>
+    </div>`,
+          )
+          .join("");
+      }
+
+      function submitManCheck() {
+        const missing = manCheckItems.filter(
+          (i) => !state.manCheckAnswers[i.id],
+        );
+        if (missing.length > 0) {
+          showToast("Jawab semua pertanyaan terlebih dahulu", "lose");
+          return;
+        }
+        state.tokens = 100;
+        state.startTokens = 100;
+        state.timestamp = new Date().toISOString();
+        drawWheel(0);
+        gotoScreen("screen-game");
+      }
+
+      function gotoSurvey() {
+        state.exitChoice = "play";
+        buildPGSI();
+        gotoScreen("screen-pgsi");
+      }
+
+      function saveAndExit() {
+        state.exitChoice = "save";
+        buildPGSI();
+        gotoScreen("screen-pgsi");
+      }
+
+      function buildPGSI() {
+        const c = document.getElementById("pgsi-items");
+        c.innerHTML = pgsiItems
+          .map(
+            (q, i) => `
+    <div class="q-item">
+      <p class="q-text"><span class="q-number">${i + 1}</span>${q}</p>
+      <div class="likert-4">
+        ${pgsiOptions
+          .map(
+            (opt, v) => `
+          <label>
+            <input type="radio" name="pgsi${i}" value="${v}" onchange="state.pgsiAnswers['pgsi${i}']=this.value">
+            <div class="l4-btn">${opt}</div>
+          </label>`,
+          )
+          .join("")}
+      </div>
+    </div>`,
+          )
+          .join("");
+      }
+
+      function submitPGSI() {
+        const missing = pgsiItems.filter(
+          (_, i) => state.pgsiAnswers[`pgsi${i}`] === undefined,
+        );
+        if (missing.length > 0) {
+          showToast("Jawab semua pertanyaan", "lose");
+          return;
+        }
+        buildGUS();
+        gotoScreen("screen-gus");
+      }
+
+      function buildGUS() {
+        const c = document.getElementById("gus-items");
+        c.innerHTML = gusItems
+          .map(
+            (q, i) => `
+    <div class="gus-item">
+      <p class="q-text"><span class="q-number">${i + 1}</span>${q}</p>
+      <div class="vas-wrap">
+        <span style="font-size:.78rem;color:var(--muted);">0</span>
+        <input type="range" min="0" max="10" value="5" step="1"
+          oninput="this.nextElementSibling.textContent=this.value;state.gusAnswers['gus${i}']=this.value"
+          onchange="state.gusAnswers['gus${i}']=this.value">
+        <div class="vas-val">5</div>
+      </div>
+      <div class="vas-labels"><span>Sangat tidak setuju</span><span>Sangat setuju</span></div>
+    </div>`,
+          )
+          .join("");
+        // initialize defaults
+        gusItems.forEach((_, i) => {
+          state.gusAnswers[`gus${i}`] = 5;
+        });
+      }
+
+      function submitGUS() {
+        computeScores();
+        buildResultScreen();
+        saveToStorage();
+        gotoScreen("screen-result");
+      }
+
+      // ============================================================
+      // SCORING
+      // ============================================================
+      function computeScores() {
+        // PGSI: sum 0–3
+        let pgsi = 0;
+        pgsiItems.forEach((_, i) => {
+          pgsi += parseInt(state.pgsiAnswers[`pgsi${i}`] || 0);
+        });
+        state.pgsiScore = pgsi;
+
+        // GUS: mean * 10 (normalized to 100) or just mean
+        let gusSum = 0;
+        gusItems.forEach((_, i) => {
+          gusSum += parseInt(state.gusAnswers[`gus${i}`] || 5);
+        });
+        state.gusScore = +(gusSum / gusItems.length).toFixed(1);
+      }
+
+      function pgsiCategory(score) {
+        if (score === 0) return { label: "Non-Gambler", cls: "score-low" };
+        if (score <= 2) return { label: "Berisiko Rendah", cls: "score-low" };
+        if (score <= 7) return { label: "Berisiko Sedang", cls: "score-mod" };
+        return { label: "Bermasalah", cls: "score-high" };
+      }
+
+      function gusCategory(score) {
+        if (score <= 3) return { label: "Dorongan Rendah", cls: "score-low" };
+        if (score <= 6) return { label: "Dorongan Sedang", cls: "score-mod" };
+        return { label: "Dorongan Tinggi", cls: "score-high" };
+      }
+
+      function buildResultScreen() {
+        const pc = pgsiCategory(state.pgsiScore);
+        const gc = gusCategory(state.gusScore);
+
+        document.getElementById("pgsi-score").textContent = state.pgsiScore;
+        document.getElementById("pgsi-score").className = "score " + pc.cls;
+        document.getElementById("pgsi-cat").textContent = pc.label;
+        document.getElementById("pgsi-cat").className = "category " + pc.cls;
+
+        document.getElementById("gus-score").textContent = state.gusScore;
+        document.getElementById("gus-score").className = "score " + gc.cls;
+        document.getElementById("gus-cat").textContent = gc.label;
+        document.getElementById("gus-cat").className = "category " + gc.cls;
+
+        // Interpretation
+        const faLabel = state.fa === "high" ? "tinggi" : "rendah";
+        const ftpLabel = state.ftp === "high" ? "tinggi" : "rendah";
+        document.getElementById("result-interpretation").textContent =
+          `Anda ditempatkan dalam kondisi Financial Anxiety ${faLabel} dan Future Time Perspective ${ftpLabel}. ` +
+          `Skor PGSI Anda ${state.pgsiScore} (${pc.label}) menunjukkan tingkat masalah perjudian berdasarkan pengalaman bermain. ` +
+          `Skor GUS Anda ${state.gusScore} dari 10 (${gc.label}) menggambarkan kekuatan dorongan untuk berjudi setelah sesi ini. ` +
+          `Data ini akan dianalisis bersama dengan kondisi eksperimen untuk memahami faktor yang mempengaruhi perilaku pengambilan keputusan berisiko.`;
+
+        // Researcher table
+        const net = state.tokens - state.startTokens;
+        const rows = [
+          ["ID Partisipan", state.participantId],
+          ["Timestamp", state.timestamp],
+          ["Usia", state.age],
+          ["Jenis Kelamin", state.gender],
+          ["Semester", state.semester],
+          ["Uang Saku", state.income],
+          [
+            "Kondisi FA",
+            state.fa === "high" ? "Tinggi (FA-H)" : "Rendah (FA-L)",
+          ],
+          [
+            "Kondisi FTP",
+            state.ftp === "high" ? "Tinggi (FTP-H)" : "Rendah (FTP-L)",
+          ],
+          ["Token Awal", state.startTokens],
+          ["Token Akhir", state.tokens],
+          ["Perubahan Token", (net >= 0 ? "+" : "") + net],
+          ["Total Spin", state.spins],
+          ["Menang", state.wins],
+          ["Kalah", state.losses],
+          [
+            "Pilihan Keluar",
+            state.exitChoice === "save" ? "Simpan Token" : "Lanjut Bermain",
+          ],
+          [
+            "PGSI Score",
+            state.pgsiScore + " — " + pgsiCategory(state.pgsiScore).label,
+          ],
+          [
+            "GUS Score",
+            state.gusScore + " — " + gusCategory(state.gusScore).label,
+          ],
+        ];
+        document.getElementById("researcher-table").innerHTML = rows
+          .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`)
+          .join("");
+      }
+
+      // ============================================================
+      // STORAGE
+      // ============================================================
+      function saveToStorage() {
+        const key = "luckyspin_data";
+        let arr = [];
+        try {
+          arr = JSON.parse(localStorage.getItem(key)) || [];
+        } catch (e) {}
+        arr.push({
+          id: state.participantId,
+          timestamp: state.timestamp,
+          age: state.age,
+          gender: state.gender,
+          semester: state.semester,
+          income: state.income,
+          fa: state.fa,
+          ftp: state.ftp,
+          startTokens: state.startTokens,
+          endTokens: state.tokens,
+          spins: state.spins,
+          wins: state.wins,
+          losses: state.losses,
+          exitChoice: state.exitChoice,
+          pgsiScore: state.pgsiScore,
+          pgsiCat: pgsiCategory(state.pgsiScore).label,
+          gusScore: state.gusScore,
+          gusCat: gusCategory(state.gusScore).label,
+          pgsiAnswers: state.pgsiAnswers,
+          gusAnswers: state.gusAnswers,
+          manCheckAnswers: state.manCheckAnswers,
+          spinHistory: state.spinHistory,
+        });
+        localStorage.setItem(key, JSON.stringify(arr));
+      }
+
+      function downloadData() {
+        const d = {
+          participantId: state.participantId,
+          exportTime: new Date().toISOString(),
+          demographics: {
+            age: state.age,
+            gender: state.gender,
+            semester: state.semester,
+            income: state.income,
+          },
+          condition: { fa: state.fa, ftp: state.ftp },
+          game: {
+            startTokens: state.startTokens,
+            endTokens: state.tokens,
+            spins: state.spins,
+            wins: state.wins,
+            losses: state.losses,
+            exitChoice: state.exitChoice,
+            spinHistory: state.spinHistory,
+          },
+          manCheck: state.manCheckAnswers,
+          pgsi: {
+            score: state.pgsiScore,
+            category: pgsiCategory(state.pgsiScore).label,
+            answers: state.pgsiAnswers,
+          },
+          gus: {
+            score: state.gusScore,
+            category: gusCategory(state.gusScore).label,
+            answers: state.gusAnswers,
+          },
+        };
+        const blob = new Blob([JSON.stringify(d, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `luckyspin_${state.participantId}.json`;
+        a.click();
+      }
+
+      // ============================================================
+      // ADMIN PANEL
+      // ============================================================
+      function gotoAdmin() {
+        loadAdminTable();
+        gotoScreen("screen-admin");
+      }
+
+      function loadAdminTable() {
+        let arr = [];
+        try {
+          arr = JSON.parse(localStorage.getItem("luckyspin_data")) || [];
+        } catch (e) {}
+        const tbody = document.getElementById("admin-tbody");
+        if (arr.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="16" style="text-align:center;color:var(--muted);padding:2rem;">Belum ada data</td></tr>';
+          return;
+        }
+        tbody.innerHTML = arr
+          .map(
+            (d) => `
+    <tr>
+      <td>${d.id}</td>
+      <td>${d.timestamp ? d.timestamp.replace("T", " ").substring(0, 16) : "—"}</td>
+      <td>${d.age}</td>
+      <td>${d.gender}</td>
+      <td><span class="chip ${d.fa === "high" ? "chip-red" : "chip-green"}">${d.fa === "high" ? "Tinggi" : "Rendah"}</span></td>
+      <td><span class="chip ${d.ftp === "high" ? "chip-blue" : "chip-gold"}">${d.ftp === "high" ? "Tinggi" : "Rendah"}</span></td>
+      <td>${d.startTokens}</td>
+      <td>${d.endTokens}</td>
+      <td>${d.spins}</td>
+      <td>${d.wins}</td>
+      <td>${d.losses}</td>
+      <td><strong>${d.pgsiScore}</strong></td>
+      <td>${d.pgsiCat}</td>
+      <td><strong>${d.gusScore}</strong></td>
+      <td>${d.gusCat}</td>
+      <td>${d.exitChoice === "save" ? "💾 Simpan" : "🎰 Lanjut Main"}</td>
+    </tr>`,
+          )
+          .join("");
+      }
+
+      function exportCSV() {
+        let arr = [];
+        try {
+          arr = JSON.parse(localStorage.getItem("luckyspin_data")) || [];
+        } catch (e) {}
+        if (!arr.length) {
+          showToast("Belum ada data", "lose");
+          return;
+        }
+        const headers = [
+          "ID",
+          "Timestamp",
+          "Usia",
+          "Gender",
+          "Semester",
+          "Uang Saku",
+          "FA",
+          "FTP",
+          "Token Awal",
+          "Token Akhir",
+          "Total Spin",
+          "Menang",
+          "Kalah",
+          "PGSI Score",
+          "PGSI Kategori",
+          "GUS Score",
+          "GUS Kategori",
+          "Pilihan Keluar",
+        ];
+        const rows = arr.map((d) =>
+          [
+            d.id,
+            d.timestamp,
+            d.age,
+            d.gender,
+            d.semester,
+            d.income,
+            d.fa,
+            d.ftp,
+            d.startTokens,
+            d.endTokens,
+            d.spins,
+            d.wins,
+            d.losses,
+            d.pgsiScore,
+            d.pgsiCat,
+            d.gusScore,
+            d.gusCat,
+            d.exitChoice,
+          ].join(","),
+        );
+        const csv = [headers.join(","), ...rows].join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `luckyspin_export_${Date.now()}.csv`;
+        a.click();
+      }
+
+      // ============================================================
+      // HELPERS
+      // ============================================================
+      function setBet(v) {
+        document.getElementById("bet-input").value = v;
+      }
+
+      function showToast(msg, type) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast show toast-" + type;
+        setTimeout(() => (t.className = "toast"), 3000);
+      }
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      drawWheel(0);
+    </script>
+  </body>
+</html>
